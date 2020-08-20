@@ -1,44 +1,100 @@
 package com.bolsadeideas.springboot.app.springbootform.controllers;
 
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
 
 import com.bolsadeideas.springboot.app.springbootform.domain.Usuario;
+import com.bolsadeideas.springboot.app.springbootform.editors.NombreMayusculaEditor;
+import com.bolsadeideas.springboot.app.springbootform.validation.UsuarioValidador;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
 
 @Controller
+@SessionAttributes("usuario")
 public class FormController {
- 
+
+    @Autowired
+    private UsuarioValidador validador;
+
+    @InitBinder
+    public void InitBinder(WebDataBinder binder) {
+        binder.addValidators(validador);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        dateFormat.setLenient(false);
+        binder.registerCustomEditor(Date.class, "fechadenacimiento", new CustomDateEditor(dateFormat, true));
+
+        binder.registerCustomEditor(String.class, "nombre", new NombreMayusculaEditor());
+        binder.registerCustomEditor(String.class, "apellido", new NombreMayusculaEditor());
+    }
+
+    @ModelAttribute("paises")
+    public List<String> paises() {
+        return Arrays.asList("España", "Mexico", "Chile", "Argentina", "Peru", "Colombia", "Venezuela");
+    }
+
+    @ModelAttribute("paisesMap")
+    public Map<String, String> paisesMap() {
+        Map<String, String> paises = new HashMap<String, String>();
+        paises.put("ES", "España");
+        paises.put("MX", "Mexico");
+        paises.put("CL", "Chile");
+        paises.put("AR", "Argentina");
+        paises.put("PE", "Peru");
+        paises.put("CO", "Colombia");
+        paises.put("VE", "Venezuela");
+        return paises;
+    }
+
     @GetMapping("/form")
-    public String form(Model model) {
-        Usuario usuario = new Usuario();
+    public String form(final Model model) {
+        final Usuario usuario = new Usuario();
+        usuario.setNombre("nombre1");
+        usuario.setApellido("apellido1");
+        usuario.setIdentificador("12.456.789-K");
+        usuario.setUsername("username");
+        usuario.setEmail("mesa@mesa.cl");
+        usuario.setPassword("mesa@mesa.cl");
+        usuario.setCuenta(6);
         model.addAttribute("usuario", usuario);
         model.addAttribute("titulo", "Formulario usuarios");
         return "form";
     }
 
     @PostMapping("/form")
-    public String procesar(@Valid Usuario usuario, BindingResult result, Model model) {
+    public String procesar(@Valid final Usuario usuario, final BindingResult result, final Model model,
+            final SessionStatus status) {
+        // validador.validate(usuario, result);
         model.addAttribute("titulo", "Resultado Form");
-        
+
         if (result.hasErrors()) {
             // Map<String,String> errores = new HashMap<>();
             // result.getFieldErrors().forEach(err -> {
-            //     errores.put(err.getField(),"El campo ".concat(err.getField()).concat(" ").concat(err.getDefaultMessage()));
+            // errores.put(err.getField(),"El campo ".concat(err.getField()).concat("
+            // ").concat(err.getDefaultMessage()));
             // });
             // model.addAttribute("error", errores);
-            return "form";            
+            return "form";
         }
-        
-        model.addAttribute("usuario",usuario);
-
-    return"resultado";
-}
+        status.setComplete();
+        model.addAttribute("usuario", usuario);
+        return "resultado";
+    }
 }
