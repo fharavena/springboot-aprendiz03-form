@@ -1,6 +1,7 @@
 package com.bolsadeideas.springboot.app.springbootform.controllers;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -9,8 +10,11 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
+import com.bolsadeideas.springboot.app.springbootform.domain.Pais;
 import com.bolsadeideas.springboot.app.springbootform.domain.Usuario;
 import com.bolsadeideas.springboot.app.springbootform.editors.NombreMayusculaEditor;
+import com.bolsadeideas.springboot.app.springbootform.editors.PaisPropertyEditor;
+import com.bolsadeideas.springboot.app.springbootform.services.PaisService;
 import com.bolsadeideas.springboot.app.springbootform.validation.UsuarioValidador;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +37,12 @@ public class FormController {
     @Autowired
     private UsuarioValidador validador;
 
+    @Autowired
+    private PaisService paisService;
+
+    @Autowired
+    private PaisPropertyEditor paisEditor;
+
     @InitBinder
     public void InitBinder(WebDataBinder binder) {
         binder.addValidators(validador);
@@ -43,6 +53,21 @@ public class FormController {
 
         binder.registerCustomEditor(String.class, "nombre", new NombreMayusculaEditor());
         binder.registerCustomEditor(String.class, "apellido", new NombreMayusculaEditor());
+        binder.registerCustomEditor(Pais.class, "pais", paisEditor);
+    }
+
+    @ModelAttribute("listaPaises")
+    public List<Pais> listaPaises() {
+        return paisService.listar();
+    }
+
+    @ModelAttribute("listaRolesString")
+    public List<String> listaRolesString(){
+        List<String> roles = new ArrayList<>();
+        roles.add("ROLE_ADMIN");
+        roles.add("ROLE_USER");
+        roles.add("ROLE_MODERATOR");
+        return roles;
     }
 
     @ModelAttribute("paises")

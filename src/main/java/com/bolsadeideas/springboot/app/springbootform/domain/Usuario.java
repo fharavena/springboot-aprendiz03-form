@@ -1,7 +1,9 @@
 package com.bolsadeideas.springboot.app.springbootform.domain;
 
 import java.util.Date;
+import java.util.List;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
@@ -48,8 +50,13 @@ public class Usuario {
     @Max(5000)
     private Integer cuenta;
 
+    @NotNull
+    private Pais pais;
+
     @NotEmpty
-    private String pais;
+    private List<String> roles;
+
+ 
 
     @NotNull // para objetos: Date es objeto
     // @Past(message = "debe ser fecha actual o anterior") //solo fechas pasadas o
@@ -123,12 +130,20 @@ public class Usuario {
         this.fechadenacimiento = fechadenacimiento;
     }
 
-    public String getPais() {
+    public Pais getPais() {
         return this.pais;
     }
 
-    public void setPais(String pais) {
+    public void setPais(Pais pais) {
         this.pais = pais;
+    }
+
+    public List<String> getRoles() {
+        return this.roles;
+    }
+
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
     }
 
 }
