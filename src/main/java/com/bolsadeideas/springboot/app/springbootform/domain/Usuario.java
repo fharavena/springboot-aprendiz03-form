@@ -54,9 +54,12 @@ public class Usuario {
     private Pais pais;
 
     @NotEmpty
-    private List<String> roles;
+    private List<Role> roles;
 
- 
+    private Boolean habilitar;
+
+    @NotEmpty
+    private String genero;
 
     @NotNull // para objetos: Date es objeto
     // @Past(message = "debe ser fecha actual o anterior") //solo fechas pasadas o
@@ -138,12 +141,35 @@ public class Usuario {
         this.pais = pais;
     }
 
-    public List<String> getRoles() {
+    public List<Role> getRoles() {
         return this.roles;
     }
 
-    public void setRoles(List<String> roles) {
+    public void setRoles(List<Role> roles) {
         this.roles = roles;
     }
+
+
+    public Boolean isHabilitar() {
+        return this.habilitar;
+    }
+
+    public Boolean getHabilitar() {
+        return this.habilitar;
+    }
+
+    public void setHabilitar(Boolean habilitar) {
+        this.habilitar = habilitar;
+    }
+
+
+    public String getGenero() {
+        return this.genero;
+    }
+
+    public void setGenero(String genero) {
+        this.genero = genero;
+    }
+
 
 }

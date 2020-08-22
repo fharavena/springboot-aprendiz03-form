@@ -11,10 +11,13 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import com.bolsadeideas.springboot.app.springbootform.domain.Pais;
+import com.bolsadeideas.springboot.app.springbootform.domain.Role;
 import com.bolsadeideas.springboot.app.springbootform.domain.Usuario;
 import com.bolsadeideas.springboot.app.springbootform.editors.NombreMayusculaEditor;
 import com.bolsadeideas.springboot.app.springbootform.editors.PaisPropertyEditor;
+import com.bolsadeideas.springboot.app.springbootform.editors.RolesEditor;
 import com.bolsadeideas.springboot.app.springbootform.services.PaisService;
+import com.bolsadeideas.springboot.app.springbootform.services.RoleService;
 import com.bolsadeideas.springboot.app.springbootform.validation.UsuarioValidador;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +44,13 @@ public class FormController {
     private PaisService paisService;
 
     @Autowired
+    private RoleService roleService;
+
+    @Autowired
     private PaisPropertyEditor paisEditor;
+
+    @Autowired
+    private RolesEditor roleEditor;
 
     @InitBinder
     public void InitBinder(WebDataBinder binder) {
@@ -54,6 +63,16 @@ public class FormController {
         binder.registerCustomEditor(String.class, "nombre", new NombreMayusculaEditor());
         binder.registerCustomEditor(String.class, "apellido", new NombreMayusculaEditor());
         binder.registerCustomEditor(Pais.class, "pais", paisEditor);
+        binder.registerCustomEditor(Role.class, "roles", roleEditor);
+    }
+
+    @ModelAttribute("genero")
+    public List<String> genero(){
+        return Arrays.asList("Hombre","Mujer");
+    }
+    @ModelAttribute("listaRoles")
+    public List<Role> listaRoles() {
+        return this.roleService.listar();
     }
 
     @ModelAttribute("listaPaises")
@@ -62,11 +81,20 @@ public class FormController {
     }
 
     @ModelAttribute("listaRolesString")
-    public List<String> listaRolesString(){
+    public List<String> listaRolesString() {
         List<String> roles = new ArrayList<>();
         roles.add("ROLE_ADMIN");
         roles.add("ROLE_USER");
         roles.add("ROLE_MODERATOR");
+        return roles;
+    }
+
+    @ModelAttribute("listaRolesMap")
+    public Map<String, String> listaRolesMap() {
+        Map<String, String> roles = new HashMap<String, String>();
+        roles.put("ROLES_ADMIN", "Administrador");
+        roles.put("ROLE_USER", "Usuario");
+        roles.put("ROLE_MODERATOR", "Moderador");
         return roles;
     }
 
@@ -97,6 +125,7 @@ public class FormController {
         usuario.setUsername("username");
         usuario.setEmail("mesa@mesa.cl");
         usuario.setPassword("mesa@mesa.cl");
+        usuario.setHabilitar(true);
         usuario.setCuenta(6);
         model.addAttribute("usuario", usuario);
         model.addAttribute("titulo", "Formulario usuarios");
