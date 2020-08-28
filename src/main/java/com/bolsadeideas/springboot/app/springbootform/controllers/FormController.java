@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 
@@ -67,9 +68,10 @@ public class FormController {
     }
 
     @ModelAttribute("genero")
-    public List<String> genero(){
-        return Arrays.asList("Hombre","Mujer");
+    public List<String> genero() {
+        return Arrays.asList("Hombre", "Mujer");
     }
+
     @ModelAttribute("listaRoles")
     public List<Role> listaRoles() {
         return this.roleService.listar();
@@ -126,6 +128,10 @@ public class FormController {
         usuario.setEmail("mesa@mesa.cl");
         usuario.setPassword("mesa@mesa.cl");
         usuario.setHabilitar(true);
+        usuario.setValorSecreto("Algun valor secreto ****");
+        usuario.setPais(new Pais(3, "CL", "Chile"));
+        usuario.setRoles(Arrays.asList(new Role(2, "Usuario", "ROLE_USER")));
+
         usuario.setCuenta(6);
         model.addAttribute("usuario", usuario);
         model.addAttribute("titulo", "Formulario usuarios");
@@ -133,12 +139,11 @@ public class FormController {
     }
 
     @PostMapping("/form")
-    public String procesar(@Valid final Usuario usuario, final BindingResult result, final Model model,
-            final SessionStatus status) {
+    public String procesar(@Valid Usuario usuario, BindingResult result, Model model) {
         // validador.validate(usuario, result);
-        model.addAttribute("titulo", "Resultado Form");
-
+        
         if (result.hasErrors()) {
+            model.addAttribute("titulo", "Resultado Form"); 
             // Map<String,String> errores = new HashMap<>();
             // result.getFieldErrors().forEach(err -> {
             // errores.put(err.getField(),"El campo ".concat(err.getField()).concat("
@@ -147,8 +152,18 @@ public class FormController {
             // model.addAttribute("error", errores);
             return "form";
         }
+
+        return "redirect:/ver";
+    }
+
+    @GetMapping("/ver")
+    public String ver(@SessionAttribute(name="usuario",required=false) Usuario usuario, Model model, SessionStatus status) {
+        if (usuario==null) {
+            return "redirect:/form";
+        }
+
+        model.addAttribute("titulo", "Resultado Form");
         status.setComplete();
-        model.addAttribute("usuario", usuario);
         return "resultado";
     }
 }

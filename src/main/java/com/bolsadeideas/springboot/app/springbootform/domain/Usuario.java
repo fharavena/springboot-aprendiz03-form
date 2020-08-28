@@ -61,6 +61,8 @@ public class Usuario {
     @NotEmpty
     private String genero;
 
+    private String valorSecreto;
+
     @NotNull // para objetos: Date es objeto
     // @Past(message = "debe ser fecha actual o anterior") //solo fechas pasadas o
     // actual
@@ -171,5 +173,13 @@ public class Usuario {
         this.genero = genero;
     }
 
+
+    public String getValorSecreto() {
+        return this.valorSecreto;
+    }
+
+    public void setValorSecreto(String valorSecreto) {
+        this.valorSecreto = valorSecreto;
+    }
 
 }
