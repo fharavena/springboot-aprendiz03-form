@@ -64,7 +64,7 @@ public class FormController {
         binder.registerCustomEditor(String.class, "nombre", new NombreMayusculaEditor());
         binder.registerCustomEditor(String.class, "apellido", new NombreMayusculaEditor());
         binder.registerCustomEditor(Pais.class, "pais", paisEditor);
-        binder.registerCustomEditor(Role.class, "roles", roleEditor);
+        binder.registerCustomEditor(Role.class, "roles", roleEditor);        
     }
 
     @ModelAttribute("genero")
